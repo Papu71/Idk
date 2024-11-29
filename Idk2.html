@@ -8,6 +8,7 @@
     body {
       margin: 0;
       overflow: hidden;
+      background: radial-gradient(circle, #000428, #004e92);
     }
     canvas {
       display: block;
@@ -24,35 +25,37 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // Añadiendo el "Sol"
+    // Crear el Sol
     const sunGeometry = new THREE.SphereGeometry(2, 32, 32);
     const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffcc00, emissive: 0xffcc00 });
     const sun = new THREE.Mesh(sunGeometry, sunMaterial);
     scene.add(sun);
 
-    // Planetas
+    // Datos de los planetas
     const planets = [];
-    const planetColors = [0x00ff00, 0x0077ff, 0xff7700, 0x9900cc]; // Colores de planetas
-    const orbitRadii = [5, 8, 11, 14]; // Radios orbitales
+    const planetColors = [0x00ff00, 0x0077ff, 0xff7700, 0x9900cc]; // Colores de los planetas
+    const orbitRadii = [5, 8, 11, 14]; // Distancia al Sol
     const speeds = [0.01, 0.008, 0.006, 0.004]; // Velocidades orbitales
 
     for (let i = 0; i < 4; i++) {
-      const planetGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+      const planetGeometry = new THREE.SphereGeometry(0.5, 16, 16); // Tamaño de los planetas
       const planetMaterial = new THREE.MeshStandardMaterial({ color: planetColors[i] });
       const planet = new THREE.Mesh(planetGeometry, planetMaterial);
       planets.push({ mesh: planet, angle: Math.random() * Math.PI * 2, radius: orbitRadii[i], speed: speeds[i] });
       scene.add(planet);
     }
 
-    // Luces
-    const ambientLight = new THREE.AmbientLight(0x404040);
+    // Añadir luces
+    const ambientLight = new THREE.AmbientLight(0x404040); // Luz ambiental
     scene.add(ambientLight);
-    const pointLight = new THREE.PointLight(0xffcc00, 2, 50);
+
+    const pointLight = new THREE.PointLight(0xffcc00, 2, 50); // Luz puntual para el Sol
     scene.add(pointLight);
 
-    // Animación
+    // Establecer posición de la cámara
     camera.position.z = 20;
 
+    // Animación
     function animate() {
       requestAnimationFrame(animate);
 
@@ -60,9 +63,9 @@
       planets.forEach((planet) => {
         planet.angle += planet.speed;
         planet.mesh.position.set(
-          Math.cos(planet.angle) * planet.radius,
-          0,
-          Math.sin(planet.angle) * planet.radius
+          Math.cos(planet.angle) * planet.radius,  // Movimiento en X
+          0,  // Sin movimiento en Y
+          Math.sin(planet.angle) * planet.radius  // Movimiento en Z
         );
       });
 
@@ -71,7 +74,7 @@
 
     animate();
 
-    // Responsividad
+    // Responsividad para adaptarse a tamaños de pantalla
     window.addEventListener("resize", () => {
       renderer.setSize(window.innerWidth, window.innerHeight);
       camera.aspect = window.innerWidth / window.innerHeight;
