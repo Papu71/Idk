@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de ADN</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            text-align: center;
+            padding: 20px;
+        }
+        .game-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .pair {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            background-color: #add8e6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            border: 2px solid #008080;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .pair:hover {
+            transform: scale(1.1);
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #ff4500;
+        }
+        @media (max-width: 600px) {
+            .pair {
+                width: 80px;
+                height: 80px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Juego de ADN</h1>
+    <p>Haz clic en los pares correctos de bases de ADN.</p>
+    <div class="game-container">
+        <div class="pair" data-base="A">A</div>
+        <div class="pair" data-base="T">T</div>
+        <div class="pair" data-base="C">C</div>
+        <div class="pair" data-base="G">G</div>
+        <div class="pair" data-base="A">A</div>
+        <div class="pair" data-base="T">T</div>
+        <div class="pair" data-base="C">C</div>
+        <div class="pair" data-base="G">G</div>
+    </div>
+
+    <div class="message" id="message"></div>
+
+    <script>
+        const pairs = document.querySelectorAll('.pair');
+        let correctPairs = 0;
+
+        pairs.forEach(pair => {
+            pair.addEventListener('click', () => {
+                const selectedBase = pair.dataset.base;
+                if (selectedBase === 'A') {
+                    pair.textContent = 'A (Correcto)';
+                    pair.style.backgroundColor = 'lightgreen';
+                    correctPairs++;
+                } else if (selectedBase === 'T') {
+                    pair.textContent = 'T (Correcto)';
+                    pair.style.backgroundColor = 'lightgreen';
+                    correctPairs++;
+                } else {
+                    pair.textContent = selectedBase + ' (Incorrecto)';
+                    pair.style.backgroundColor = 'salmon';
+                }
+                pair.style.pointerEvents = 'none';
+                checkGameStatus();
+            });
+        });
+
+        function checkGameStatus() {
+            if (correctPairs === 4) {
+                document.getElementById('message').textContent = '¡Felicidades! Has emparejado todas las bases correctamente.';
+            }
+        }
+    </script>
+
+</body>
+</html>
