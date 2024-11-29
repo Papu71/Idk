@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vía Láctea</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      color: white;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    .galaxy-container {
+      position: relative;
+      width: 100vw;
+      height: 80vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .galaxy {
+      position: relative;
+      width: 50vw;
+      height: 50vw;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1), black);
+      animation: rotate 30s linear infinite;
+      overflow: visible;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      border-radius: 50%;
+      animation: twinkle 3s infinite alternate;
+      background-color: white;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes twinkle {
+      from {
+        opacity: 0.6;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .info {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .title {
+      font-size: 2rem;
+      font-weight: bold;
+      text-shadow: 0 0 10px white;
+    }
+
+    .details {
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="galaxy-container">
+    <div class="galaxy" id="galaxy"></div>
+  </div>
+  <div class="info">
+    <div class="title">Vía Láctea</div>
+    <div class="details">
+      <p>Diámetro: Aproximadamente 100,000 años luz</p>
+      <p>Componentes principales: Estrellas, gas interestelar, polvo cósmico y materia oscura</p>
+      <p>Curiosidades: Es una galaxia espiral barrada con un agujero negro supermasivo en el centro.</p>
+    </div>
+  </div>
+
+  <script>
+    const galaxy = document.getElementById('galaxy');
+    const numStars = 300;
+
+    function createStar() {
+      const star = document.createElement('div');
+      star.classList.add('star');
+
+      const angle = Math.random() * 2 * Math.PI;
+      const radius = Math.random() * 50 + 10;
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius;
+
+      star.style.left = `calc(50% + ${x}%)`;
+      star.style.top = `calc(50% + ${y}%)`;
+
+      galaxy.appendChild(star);
+    }
+
+    for (let i = 0; i < numStars; i++) {
+      createStar();
+    }
+  </script>
+</body>
+</html>

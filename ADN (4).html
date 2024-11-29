@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DNA Helix</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Light setup
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambientLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    directionalLight.position.set(10, 10, 10);
+    scene.add(directionalLight);
+
+    // DNA Helix parameters
+    const helixRadius = 2;
+    const helixHeight = 10;
+    const helixTurns = 5;
+    const helixSegments = 100;
+    const sphereRadius = 0.1;
+
+    const group = new THREE.Group();
+    scene.add(group);
+
+    // Create DNA strands
+    for (let i = 0; i < helixSegments; i++) {
+      const angle = (i / helixSegments) * Math.PI * 2 * helixTurns;
+      const y = (i / helixSegments) * helixHeight - helixHeight / 2;
+      const x1 = Math.cos(angle) * helixRadius;
+      const z1 = Math.sin(angle) * helixRadius;
+      const x2 = Math.cos(angle + Math.PI) * helixRadius;
+      const z2 = Math.sin(angle + Math.PI) * helixRadius;
+
+      // Red sphere
+      const sphereRed = new THREE.Mesh(
+        new THREE.SphereGeometry(sphereRadius, 16, 16),
+        new THREE.MeshStandardMaterial({ color: 0xff0000 })
+      );
+      sphereRed.position.set(x1, y, z1);
+      group.add(sphereRed);
+
+      // Blue sphere
+      const sphereBlue = new THREE.Mesh(
+        new THREE.SphereGeometry(sphereRadius, 16, 16),
+        new THREE.MeshStandardMaterial({ color: 0x0000ff })
+      );
+      sphereBlue.position.set(x2, y, z2);
+      group.add(sphereBlue);
+
+      // Connecting rods
+      if (i % 10 === 0) {
+        const rodGeometry = new THREE.CylinderGeometry(0.02, 0.02, helixRadius * 2, 8);
+        const rodMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+        const rod = new THREE.Mesh(rodGeometry, rodMaterial);
+        rod.position.set(0, y, 0);
+        rod.lookAt(new THREE.Vector3(x1, y, z1));
+        rod.rotateX(Math.PI / 2);
+        group.add(rod);
+      }
+    }
+
+    // Animation parameters
+    let angle = 0;
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Rotate helix
+      angle += 0.01;
+      group.rotation.y = angle;
+
+      renderer.render(scene, camera);
+    }
+
+    camera.position.set(0, 0, 15);
+    animate();
+
+    // Adjust canvas on resize
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
