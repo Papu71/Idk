@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulación Gravitacional</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+  <script>
+    // Escena, cámara y renderizador
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Sol (Centro gravitacional)
+    const sunGeometry = new THREE.SphereGeometry(2, 32, 32);
+    const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffcc00 });
+    const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+    scene.add(sun);
+
+    // Crear planetas
+    const planets = [];
+    const planetCount = 5;
+    for (let i = 0; i < planetCount; i++) {
+      const planetGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+      const planetMaterial = new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff });
+      const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+      planet.position.x = Math.random() * 20 - 10;
+      planet.position.y = Math.random() * 20 - 10;
+      planet.velocity = new THREE.Vector3(Math.random() * 0.05 - 0.025, Math.random() * 0.05 - 0.025, 0);
+      planets.push(planet);
+      scene.add(planet);
+    }
+
+    // Luz direccional para iluminar la escena
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(10, 10, 10).normalize();
+    scene.add(light);
+
+    // Luz ambiental
+    const ambientLight = new THREE.AmbientLight(0x404040); // Luz ambiental suave
+    scene.add(ambientLight);
+
+    // Posicionamos la cámara
+    camera.position.z = 30;
+
+    // Función de animación para los planetas
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Actualizar la posición de los planetas
+      planets.forEach(planet => {
+        // Movimiento gravitacional hacia el sol
+        const direction = new THREE.Vector3().subVectors(sun.position, planet.position).normalize();
+        const force = direction.multiplyScalar(0.1); // Ajustamos la fuerza de la gravedad
+        planet.velocity.add(force);
+        planet.position.add(planet.velocity);
+      });
+
+      // Ajustar la cámara para mirar siempre al centro de la escena
+      camera.lookAt(scene.position);
+
+      // Renderizamos la escena
+      renderer.render(scene, camera);
+    }
+
+    // Comenzar la animación
+    animate();
+
+    // Ajustar el tamaño del renderizador si se cambia el tamaño de la ventana
+    window.addEventListener("resize", () => {
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+    });
+  </script>
+</body>
+</html>
