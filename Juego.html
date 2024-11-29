@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Breach Detected</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: black;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .header {
+            font-size: 2em;
+            margin-bottom: 20px;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+        .data {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.9em;
+            color: red;
+        }
+    </style>
+    <script>
+        function simulateData() {
+            const randomIP = () => `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
+            const randomDNS = () => `${Math.random().toString(36).substring(2, 10)}.com`;
+            const randomLatLon = () => `Lat: ${(-90 + Math.random() * 180).toFixed(4)}, Lon: ${(-180 + Math.random() * 360).toFixed(4)}`;
+            
+            document.getElementById('ip').textContent = `IP Address: ${randomIP()}`;
+            document.getElementById('dns').textContent = `DNS: ${randomDNS()}`;
+            document.getElementById('latlon').textContent = `Approx Location: ${randomLatLon()}`;
+        }
+
+        window.onload = () => {
+            simulateData();
+            setInterval(simulateData, 3000); // Update fake data every 3 seconds
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">SYSTEM BREACH DETECTED</div>
+        <div class="data" id="ip">IP Address: Loading...</div>
+        <div class="data" id="dns">DNS: Loading...</div>
+        <div class="data" id="latlon">Approx Location: Loading...</div>
+    </div>
+    <div class="footer">Tracking your device... Do not close this page.</div>
+</body>
+</html>
