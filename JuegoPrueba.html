@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Breach Detected</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: black;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+        }
+        .container {
+            padding: 20px;
+            text-align: left;
+        }
+        .header {
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+        .data {
+            margin-top: 10px;
+        }
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.9em;
+            color: red;
+        }
+    </style>
+    <script>
+        function simulateData() {
+            const randomIP = () => `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
+            const randomDNS = () => `${Math.random().toString(36).substring(2, 10)}.com`;
+            const randomLatLon = () => `Lat: ${(-90 + Math.random() * 180).toFixed(4)}, Lon: ${(-180 + Math.random() * 360).toFixed(4)}`;
+            const randomUUID = () => `${Math.random().toString(36).substring(2, 10)}-${Math.random().toString(36).substring(2, 10)}`;
+            const randomHex = () => `${Math.random().toString(16).substring(2, 8).toUpperCase()}`;
+            const randomPhone = () => `+${Math.floor(Math.random() * 90 + 10)} ${Math.floor(1000000000 + Math.random() * 9000000000)}`;
+            
+            document.getElementById('ip').textContent = `IP Address: ${randomIP()}`;
+            document.getElementById('dns').textContent = `DNS: ${randomDNS()}`;
+            document.getElementById('latlon').textContent = `Approx Location: ${randomLatLon()}`;
+            document.getElementById('uuid').textContent = `Device UUID: ${randomUUID()}`;
+            document.getElementById('mac').textContent = `MAC Address: ${randomHex()}:${randomHex()}:${randomHex()}:${randomHex()}`;
+            document.getElementById('phone').textContent = `Phone Number: ${randomPhone()}`;
+            document.getElementById('browser').textContent = `Browser: ${navigator.userAgent}`;
+            document.getElementById('name').textContent = `Name: José Manuel Díaz Infante Márquez`;
+            document.getElementById('age').textContent = `Age: 14 years`;
+            document.getElementById('device').textContent = `Device Model: ${navigator.platform}`;
+        }
+
+        window.onload = () => {
+            simulateData();
+            setInterval(simulateData, 3000); // Update fake data every 3 seconds
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">SYSTEM BREACH DETECTED</div>
+        <div class="data" id="ip">IP Address: Loading...</div>
+        <div class="data" id="dns">DNS: Loading...</div>
+        <div class="data" id="latlon">Approx Location: Loading...</div>
+        <div class="data" id="uuid">Device UUID: Loading...</div>
+        <div class="data" id="mac">MAC Address: Loading...</div>
+        <div class="data" id="phone">Phone Number: Loading...</div>
+        <div class="data" id="browser">Browser: Loading...</div>
+        <div class="data" id="name">Name: Loading...</div>
+        <div class="data" id="age">Age: Loading...</div>
+        <div class="data" id="device">Device Model: Loading...</div>
+    </div>
+    <div class="footer">Tracking your data... Disconnecting will alert authorities.</div>
+</body>
+</html>
