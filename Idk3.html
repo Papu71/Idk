@@ -18,7 +18,7 @@
 <body>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
   <script>
-    // Escena básica de Three.js
+    // Configuración básica de la escena
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer();
@@ -27,7 +27,7 @@
 
     // Crear el "Centro Gravitacional" (el Sol o un agujero negro)
     const sunGeometry = new THREE.SphereGeometry(2, 32, 32);
-    const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffcc00 });
+    const sunMaterial = new THREE.MeshStandardMaterial({ color: 0xffcc00 });
     const sun = new THREE.Mesh(sunGeometry, sunMaterial);
     scene.add(sun);
 
@@ -45,12 +45,16 @@
       scene.add(planet);
     }
 
-    // Iluminación básica
-    const light = new THREE.PointLight(0xffffff, 1, 100);
-    light.position.set(0, 0, 0);
+    // Añadir luz direccional para iluminar la escena
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(10, 10, 10).normalize();
     scene.add(light);
 
-    // Posicionar la cámara
+    // Añadir luz ambiental para suavizar las sombras
+    const ambientLight = new THREE.AmbientLight(0x404040); // Luz ambiental suave
+    scene.add(ambientLight);
+
+    // Establecer la posición de la cámara
     camera.position.z = 30;
 
     // Animación: los planetas se atraen hacia el centro
@@ -64,6 +68,9 @@
         planet.velocity.add(force);
         planet.position.add(planet.velocity);
       });
+
+      // Actualización de la cámara para mantenerla fija
+      camera.lookAt(scene.position);
 
       renderer.render(scene, camera);
     }
