@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego: México y sus Monumentos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background-color: #006847;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        #mapa {
+            position: relative;
+            margin: 20px auto;
+            width: 600px;
+            height: 800px;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/3/3d/Map_of_Mexico_blank.svg');
+            background-size: cover;
+            background-position: center;
+        }
+        .punto {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            border-radius: 50%;
+            cursor: pointer;
+            animation: pulse 2s infinite;
+        }
+        .punto:hover {
+            transform: scale(1.2);
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+        #info {
+            margin: 20px;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+        #info img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+    </style>
+    <script>
+        const monumentos = {
+            "revolucion": {
+                nombre: "Monumento a la Revolución",
+                ubicacion: "Ciudad de México",
+                fecha: "1938",
+                historia: "Este monumento celebra la Revolución Mexicana y alberga un mausoleo para héroes revolucionarios.",
+                datosCuriosos: "Es el arco triunfal más alto de México.",
+                imagen: "https://upload.wikimedia.org/wikipedia/commons/8/89/Monumento_a_la_Revoluci%C3%B3n_Mexicana%2C_Ciudad_de_M%C3%A9xico%2C_M%C3%A9xico%2C_2015-07-22%2C_DD_17.JPG"
+            },
+            "independencia": {
+                nombre: "El Ángel de la Independencia",
+                ubicacion: "Ciudad de México",
+                fecha: "1910",
+                historia: "Conmemora el centenario de la Independencia de México.",
+                datosCuriosos: "Contiene una cápsula del tiempo en su base.",
+                imagen: "https://upload.wikimedia.org/wikipedia/commons/6/66/Angel_of_Independence_Mexico_City.jpg"
+            },
+            "ninosHeroes": {
+                nombre: "Monumento a los Niños Héroes",
+                ubicacion: "Ciudad de México",
+                fecha: "1952",
+                historia: "Rinde homenaje a los cadetes que defendieron el Castillo de Chapultepec en 1847.",
+                datosCuriosos: "Es un símbolo de valentía y sacrificio.",
+                imagen: "https://upload.wikimedia.org/wikipedia/commons/8/80/Altar_a_la_Patria.jpg"
+            }
+        };
+
+        function mostrarInfo(monumento) {
+            const info = monumentos[monumento];
+            document.getElementById('info').innerHTML = `
+                <h2>${info.nombre}</h2>
+                <p><strong>Ubicación:</strong> ${info.ubicacion}</p>
+                <p><strong>Fecha de creación:</strong> ${info.fecha}</p>
+                <p><strong>Historia:</strong> ${info.historia}</p>
+                <p><strong>Datos Curiosos:</strong> ${info.datosCuriosos}</p>
+                <img src="${info.imagen}" alt="${info.nombre}">
+            `;
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Juego: México y sus Monumentos</h1>
+        <p>Haz clic en los puntos del mapa para conocer más sobre cada monumento.</p>
+    </header>
+    <div id="mapa">
+        <div class="punto" style="top: 50%; left: 45%;" onclick="mostrarInfo('revolucion')"></div>
+        <div class="punto" style="top: 52%; left: 48%;" onclick="mostrarInfo('independencia')"></div>
+        <div class="punto" style="top: 48%; left: 47%;" onclick="mostrarInfo('ninosHeroes')"></div>
+    </div>
+    <div id="info">
+        <h2>Información del Monumento</h2>
+        <p>Haz clic en un punto del mapa para ver los detalles del monumento.</p>
+    </div>
+</body>
+</html>
