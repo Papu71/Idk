@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacker Simulation</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: black;
+            color: #00ff00;
+            font-family: monospace;
+            overflow: hidden;
+        }
+
+        #container {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 10px;
+        }
+
+        .panel {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            margin: 5px;
+            padding: 10px;
+            width: calc(33% - 20px);
+            height: 200px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        #progress {
+            display: none;
+        }
+
+        #bar {
+            background: #00ff00;
+            height: 20px;
+            width: 0;
+        }
+
+        #progress-message {
+            text-align: center;
+            margin: 5px 0;
+        }
+
+        .large-text {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 1.5em;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .blinking {
+            animation: blink 1s infinite;
+        }
+
+        #close-message {
+            display: none;
+            text-align: center;
+            color: #ff0000;
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+<body>
+
+<div id="progress">
+    <div id="bar"></div>
+    <p id="progress-message">Downloading Data... 0%</p>
+</div>
+
+<div id="container">
+    <div class="panel">Program Console<br><br>Executing malicious script<br>........<br>Error detected! Retrying...</div>
+    <div class="panel">Compiling Code<br><br>Generating packets<br>[00000001]<br>[00000010]</div>
+    <div class="panel">Neural Network Tracking<br><br>Connections Established<br>[Node_1] --> [Node_2]</div>
+    <div class="panel">Password Cracker<br><br>Decrypting<br>#################</div>
+    <div class="panel">System Logs<br><br>Access Level: Admin<br>Port Scan Detected...</div>
+    <div class="panel">Performance Monitor<br><br>CPU: 98%<br>Memory: 93%</div>
+</div>
+
+<p id="close-message" class="blinking">Device Data Cloned. Proceeding to permanent deletion...</p>
+
+<script>
+    let progress = 0;
+    const bar = document.getElementById('bar');
+    const message = document.getElementById('progress-message');
+    const container = document.getElementById('container');
+    const closeMessage = document.getElementById('close-message');
+
+    document.getElementById('progress').style.display = 'block';
+    container.style.display = 'none';
+
+    const interval = setInterval(() => {
+        progress += 1;
+        bar.style.width = progress + '%';
+        message.textContent = `Downloading Data... ${progress}%`;
+
+        if (progress === 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+                document.getElementById('progress').style.display = 'none';
+                container.style.display = 'flex';
+
+                setTimeout(() => {
+                    container.style.display = 'none';
+                    closeMessage.style.display = 'block';
+
+                    setTimeout(() => {
+                        window.close();
+                    }, 3000);
+                }, 3000);
+            }, 1000);
+        }
+    }, 100);
+</script>
+
+</body>
+</html>
