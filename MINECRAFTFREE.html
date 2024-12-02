@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Extraction Simulation</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 90%;
+            height: 90%;
+            padding: 10px;
+            border: 1px solid white;
+        }
+
+        .panel {
+            border: 1px solid white;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .panel h3 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+
+        .panel pre {
+            overflow: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            flex-grow: 1;
+        }
+
+        .loading-bar {
+            height: 20px;
+            width: 100%;
+            background-color: black;
+            border: 1px solid white;
+            margin-top: 5px;
+            position: relative;
+        }
+
+        .loading-bar::before {
+            content: '';
+            position: absolute;
+            height: 100%;
+            width: 0;
+            background-color: white;
+            animation: loading 10s linear forwards;
+        }
+
+        @keyframes loading {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        #final-message {
+            display: none;
+            text-align: center;
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="main-content" class="container">
+        <div class="panel">
+            <h3>Program Console</h3>
+            <pre>
+getUserIP() -> 192.168.1.1
+getLocation() -> LAT: 37.7749, LNG: -122.4194
+DeviceInfo() -> Android 12, POCO X6 132gb/512gb occupied
+TrackingStatus() -> ENABLED
+            </pre>
+            <div class="loading-bar"></div>
+        </div>
+        <div class="panel">
+            <h3>Compiling Code</h3>
+            <pre>
+Initializing modules...
+Fetching data packets...
+Decrypting sequences...
+Analyzing patterns...
+[COMPLETE] User behavior logged.
+            </pre>
+        </div>
+        <div class="panel">
+            <h3>Password Cracker</h3>
+            <pre>
+User: admin
+Attempts: 2456
+Current: P@ssw0rd123
+[STATUS] Brute-force ongoing...
+            </pre>
+            <div class="loading-bar"></div>
+        </div>
+        <div class="panel">
+            <h3>Neural Network Tracking</h3>
+            <pre>
+Mapping nodes...
+Connections: 512 nodes active
+Bandwidth: 2.3Gbps
+Threats detected: 4
+[STATUS] Neutralizing...
+            </pre>
+        </div>
+        <div class="panel">
+            <h3>Device Data Cloning</h3>
+            <pre>
+User Name: José Manuel Díaz Infante Márquez
+Address: Lomas Del Campestre - Loma Del Alamo 252
+Age: 14
+Phone: +52 477 845 9945
+            </pre>
+            <div class="loading-bar"></div>
+        </div>
+        <div class="panel">
+            <h3>Network Activity</h3>
+            <pre>
+Incoming requests: 457
+Outgoing requests: 1023
+Packets transferred: 1.6GB
+[STATUS] Monitoring...
+            </pre>
+        </div>
+    </div>
+
+    <div id="final-message">Device Data Cloned, proceeding to permanent deletion</div>
+
+    <script>
+        const loadingBars = document.querySelectorAll('.loading-bar::before');
+        const finalMessage = document.getElementById('final-message');
+        const mainContent = document.getElementById('main-content');
+
+        setTimeout(() => {
+            mainContent.classList.add('hidden');
+            finalMessage.style.display = 'block';
+        }, 10000);
+
+        setTimeout(() => {
+            window.close();
+        }, 15000);
+    </script>
+</body>
+</html>
