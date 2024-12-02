@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Data Extraction</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+            background: black;
+            color: #00ff00;
+            overflow: hidden;
+        }
+        .center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        #progressBar {
+            width: 80%;
+            height: 25px;
+            background: #333;
+            border: 1px solid #00ff00;
+            margin: 20px auto;
+            position: relative;
+        }
+        #progress {
+            width: 0;
+            height: 100%;
+            background: #00ff00;
+            transition: width 0.2s ease-in-out;
+        }
+        #loadingText {
+            font-size: 1.2em;
+        }
+        #finalScreen {
+            display: none;
+        }
+        .hacker-screen {
+            display: grid;
+            grid-template-areas: 
+                'console password neural'
+                'console compiling neural';
+            gap: 15px;
+            padding: 20px;
+        }
+        .hacker-screen > div {
+            border: 1px solid #00ff00;
+            padding: 10px;
+            overflow: auto;
+        }
+        .console {
+            grid-area: console;
+        }
+        .password-cracker {
+            grid-area: password;
+        }
+        .neural-network {
+            grid-area: neural;
+        }
+        .compiling {
+            grid-area: compiling;
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingScreen" class="center">
+        <div id="loadingText">Downloading Data: <span id="percent">0%</span></div>
+        <div id="progressBar">
+            <div id="progress"></div>
+        </div>
+    </div>
+
+    <div id="finalScreen" class="hacker-screen">
+        <div class="console">
+            <h3>Program Console</h3>
+            <p>get: function() {<br>return data();<br>}</p>
+            <p>fetch(url) {<br>requesting to: <span style="color: red;">192.168.0.1</span></p>
+        </div>
+        <div class="password-cracker">
+            <h3>Password Cracker</h3>
+            <p>Dictionary attack in progress...</p>
+            <p>User: José Manuel Díaz Infante Márquez</p>
+            <p>Age: 14</p>
+            <p>Phone: +52 477 845 9945</p>
+            <p>Address: Lomas Del Campestre - Loma Del Alamo 252</p>
+        </div>
+        <div class="neural-network">
+            <h3>Neural Network Tracking</h3>
+            <p>Analyzing device... Model: POCO X6 132gb/512gb occupied</p>
+        </div>
+        <div class="compiling">
+            <h3>Compiling Code</h3>
+            <p>0x4e3a - Executing scripts...</p>
+            <p>0x5b4f - Data stream confirmed...</p>
+            <p>WARNING: Unauthorized access detected</p>
+        </div>
+    </div>
+
+    <script>
+        let progress = 0;
+        const progressBar = document.getElementById('progress');
+        const percentText = document.getElementById('percent');
+        const loadingScreen = document.getElementById('loadingScreen');
+        const finalScreen = document.getElementById('finalScreen');
+
+        function updateProgress() {
+            if (progress < 100) {
+                progress++;
+                progressBar.style.width = progress + '%';
+                percentText.textContent = progress + '%';
+                setTimeout(updateProgress, 100);
+            } else {
+                setTimeout(() => {
+                    loadingScreen.innerHTML = '<p style="font-size: 1.5em;">Device Data Cloned, proceeding to permanent deletion</p>';
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                        finalScreen.style.display = 'grid';
+                        setTimeout(() => {
+                            window.close();
+                        }, 5000);
+                    }, 3000);
+                }, 1000);
+            }
+        }
+
+        updateProgress();
+    </script>
+</body>
+</html>
+
