@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulated System Breach</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 10px;
+            height: 100vh;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .window {
+            background-color: #0a0a0a;
+            border: 2px solid #00ff00;
+            padding: 10px;
+            box-shadow: 0 0 20px #00ff00;
+        }
+
+        .header {
+            background-color: #0f0f0f;
+            color: #00ff00;
+            padding: 5px;
+            font-size: 14px;
+            text-align: center;
+            border-bottom: 2px solid #00ff00;
+        }
+
+        .content {
+            margin-top: 10px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .progress {
+            background-color: #1a1a1a;
+            border: 1px solid #00ff00;
+            height: 20px;
+            position: relative;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            background-color: #00ff00;
+            height: 100%;
+            width: 0;
+            animation: load 10s linear forwards;
+        }
+
+        @keyframes load {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+
+        .alert-text {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="window">
+            <div class="header">Program Console</div>
+            <div class="content">
+                Running system checks...<br>
+                Fetching device information...<br>
+                IP Address: 192.168.0.15<br>
+                MAC Address: 00-14-22-01-23-45<br>
+                Device Model: POCO X6 132gb/512gb occupied<br>
+                Address: Lomas Del Campestre - Loma Del Alamo 252<br>
+                <br>
+                Accessing sensitive data...<br>
+                Warning: Unauthorized access detected!<br>
+            </div>
+        </div>
+
+        <div class="window">
+            <div class="header">Compiling Code</div>
+            <div class="content">
+                Compiling malicious payload...<br>
+                Injecting system hooks...<br>
+                Encrypting local storage...<br>
+                Downloading data packets: <br>
+                10% complete...<br>
+                45% complete...<br>
+                80% complete...<br>
+                100% complete.<br>
+            </div>
+        </div>
+
+        <div class="window">
+            <div class="header">Password Cracker</div>
+            <div class="content">
+                Target User: José Manuel Díaz Infante Márquez<br>
+                Age: 14<br>
+                Cracking hashed passwords...<br>
+                Detected Patterns: **********<br>
+                Match found: ********<br>
+            </div>
+        </div>
+
+        <div class="window">
+            <div class="header">Neural Network Tracking</div>
+            <div class="content">
+                Analyzing connections...<br>
+                Geolocating user...<br>
+                Current Location: Approx. 21.1234, -101.6789<br>
+                Neural mapping initialized.<br>
+                <br>
+                Visualizing network graph...<br>
+                <svg width="100%" height="100">
+                    <line x1="10" y1="10" x2="100" y2="50" style="stroke:#00ff00;stroke-width:2" />
+                    <line x1="100" y1="50" x2="200" y2="20" style="stroke:#00ff00;stroke-width:2" />
+                </svg>
+            </div>
+        </div>
+
+        <div class="window">
+            <div class="header">System Progress</div>
+            <div class="content">
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+                <div class="alert-text" id="alert">Device Data Cloned, proceeding to permanent deletion...</div>
+            </div>
+        </div>
+
+        <div class="window">
+            <div class="header">Network Monitor</div>
+            <div class="content">
+                DNS Server: 8.8.8.8<br>
+                Connected Devices: 5<br>
+                - Device 1: 192.168.0.10<br>
+                - Device 2: 192.168.0.12<br>
+                - Device 3: 192.168.0.14<br>
+                Active Sessions: 3<br>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const progressBar = document.querySelector('.progress-bar');
+        const alertText = document.getElementById('alert');
+
+        progressBar.addEventListener('animationend', () => {
+            alertText.style.display = 'block';
+            setTimeout(() => {
+                window.close();
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
