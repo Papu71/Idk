@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1a1a1a;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #game-status {
+      margin-bottom: 20px;
+      font-size: 1.5em;
+      text-align: center;
+    }
+
+    #chessboard {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(8, 1fr);
+      width: 90vmin;
+      height: 90vmin;
+      border: 2px solid white;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    .square {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5vmin;
+    }
+
+    .red {
+      background-color: #8b0000;
+    }
+
+    .black {
+      background-color: #000;
+    }
+
+    .piece {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .highlight {
+      background-color: rgba(255, 255, 0, 0.5);
+    }
+
+    .in-check {
+      background-color: rgba(255, 165, 0, 0.7); /* Naranja para jaque */
+    }
+
+    .checkmate {
+      background-color: rgba(255, 0, 0, 0.7); /* Rojo para jaque mate */
+    }
+
+    .stalemate {
+      background-color: rgba(128, 128, 128, 0.7); /* Gris para rey ahogado */
+    }
+  </style>
+</head>
+<body>
+  <div id="game-status">Turno de las blancas</div>
+  <div id="chessboard"></div>
+
+  <script>
+    const boardElement = document.getElementById("chessboard");
+    const gameStatus = document.getElementById("game-status");
+
+    let turn = "white"; // Alterna entre 'white' y 'black'
+    let selectedPiece = null;
+    let selectedPosition = null;
+
+    // Tablero inicial con las piezas
+    const initialBoard = [
+      ["r", "n", "b", "q", "k", "b", "n", "r"],
+      ["p", "p", "p", "p", "p", "p", "p", "p"],
+      ["", "", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
+      ["P", "P", "P", "P", "P", "P", "P", "P"],
+      ["R", "N", "B", "Q", "K", "B", "N", "R"]
+    ];
+
+    const pieceSymbols = {
+      r: "♜", n: "♞", b: "♝", q: "♛", k: "♚", p: "♟",
+      R: "♖", N: "♘", B: "♗", Q: "♕", K: "♔", P: "♙"
+    };
+
+    const pieceColors = {
+      r: "black", n: "black", b: "black", q: "black", k: "black", p: "black",
+      R: "white", N: "white", B: "white", Q: "white", K: "white", P: "white"
+    };
+
+    function createChessboard() {
+      boardElement.innerHTML = "";
+      initialBoard.forEach((row, rowIndex) => {
+        row.forEach((piece, colIndex) => {
+          const square = document.createElement("div");
+          square.className = "square " + ((rowIndex + colIndex) % 2 === 0 ? "red" : "black");
+          square.dataset.row = rowIndex;
+          square.dataset.col = colIndex;
+
+          if (piece) {
+            const pieceElement = document.createElement("div");
+            pieceElement.textContent = pieceSymbols[piece];
+            pieceElement.className = "piece";
+            square.appendChild(pieceElement);
+          }
+
+          square.addEventListener("click", handleSquareClick);
+          boardElement.appendChild(square);
+        });
+      });
+    }
+
+    function handleSquareClick(event) {
+      const square = event.currentTarget;
+      const row = parseInt(square.dataset.row);
+      const col = parseInt(square.dataset.col);
+
+      if (selectedPiece) {
+        movePiece(row, col);
+      } else {
+        selectPiece(row, col, square);
+      }
+    }
+
+    function selectPiece(row, col, square) {
+      const piece = initialBoard[row][col];
+      if (piece && pieceColors[piece] === turn) {
+        deselectPiece();
+        selectedPiece = piece;
+        selectedPosition = { row, col };
+        square.classList.add("highlight");
+      }
+    }
+
+    function deselectPiece() {
+      const squares = document.querySelectorAll(".square");
+      squares.forEach((square) => square.classList.remove("highlight"));
+      selectedPiece = null;
+      selectedPosition = null;
+    }
+
+    function movePiece(row, col) {
+      const { row: selectedRow, col: selectedCol } = selectedPosition;
+
+      if (isLegalMove(selectedPiece, selectedRow, selectedCol, row, col)) {
+        initialBoard[row][col] = selectedPiece;
+        initialBoard[selectedRow][selectedCol] = "";
+        deselectPiece();
+        toggleTurn();
+        checkGameState();
+        createChessboard();
+      }
+    }
+
+    function isLegalMove(piece, fromRow, fromCol, toRow, toCol) {
+      // Validar movimientos legales para cada pieza (implementar reglas aquí)
+      return true;
+    }
+
+    function checkGameState() {
+      // Detectar jaque, jaque mate o rey ahogado
+    }
+
+    function toggleTurn() {
+      turn = turn === "white" ? "black" : "white";
+      gameStatus.textContent = `Turno de las ${turn === "white" ? "blancas" : "negras"}`;
+    }
+
+    createChessboard();
+  </script>
+</body>
+</html>
