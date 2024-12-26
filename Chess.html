@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tablero de Ajedrez Interactivo</title>
+    <link rel="stylesheet" href="https://unpkg.com/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #2c2c2c;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        #board {
+            margin: 20px;
+        }
+        .notation {
+            display: flex;
+            justify-content: space-between;
+            width: 320px;
+            margin-top: 10px;
+        }
+        .notation span {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tablero de Ajedrez Interactivo</h1>
+    <div id="board" style="width: 320px"></div>
+    <div class="notation">
+        <span>A</span><span>B</span><span>C</span><span>D</span>
+        <span>E</span><span>F</span><span>G</span><span>H</span>
+    </div>
+    <script src="https://unpkg.com/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script>
+        const board = Chessboard('board', {
+            draggable: true,
+            position: 'start',
+            onDragStart: onDragStart,
+            onDrop: onDrop,
+            onMouseoutSquare: onMouseoutSquare,
+            onMouseoverSquare: onMouseoverSquare,
+            pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
+        });
+
+        const game = new Chess();
+
+        function onDragStart(source, piece, position, orientation) {
+            // Evita mover piezas cuando el juego ha terminado
+            if (game.game_over()) return false;
+
+            // Evita que el jugador mueva las piezas del oponente
+            if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+                (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+                return false;
+            }
+        }
+
+        function onDrop(source, target) {
+            // Eliminar resaltado de movimientos anteriores
+            removeGreySquares();
+
+            // Verificar si el movimiento es legal
+            const move = game.move({
+                from: source,
+                to: target,
+                promotion: 'q' // Promociona peones automáticamente a reina
+            });
+
+            // Movimiento ilegal
+            if (move === null) return 'snapback';
+
+            // Actualizar el tablero con la nueva posición
+            updateStatus();
+        }
+
+        function onMouseoverSquare(square, piece) {
+            // Obtener movimientos legales para la pieza seleccionada
+            const moves = game.moves({
+                square: square,
+                verbose: true
+            });
+
+            // No resaltar si no hay movimientos disponibles
+            if (moves.length === 0) return;
+
+            // Resaltar la casilla actual
+            greySquare(square);
+
+            // Resaltar las casillas a las que la pieza puede moverse
+            for (let i = 0; i < moves.length; i++) {
+                greySquare(moves[i].to);
+            }
+        }
+
+        function onMouseoutSquare(square, piece) {
+            // Eliminar resaltado cuando el ratón sale de la casilla
+            removeGreySquares();
+        }
+
+        function greySquare(square) {
+            const squareEl = document.querySelector(`.square-${square}`);
+
+            if (squareEl) {
+                squareEl.style.backgroundColor = '#a9a9a9';
+            }
+        }
+
+        function removeGreySquares() {
+            const squares = document.querySelectorAll('#board .square-55d63');
+
+            squares.forEach(square => {
+                square.style.backgroundColor = '';
+            });
+        }
+
+        function updateStatus() {
+            let status = '';
+
+            const moveColor = game.turn() === 'b' ? 'Negras' : 'Blancas';
+
+            // Verificar jaque mate
+            if (game.in_checkmate()) {
+                status = `Fin del juego, ${moveColor} están en jaque mate.`;
+            }
+            // Verificar tablas
+            else if (game.in_draw()) {
+                status = 'Fin del juego, tablas.';
+            }
+            // Continuar el juego
+            else {
+                status = `Turno de las ${moveColor}.`;
+
+                // Verificar jaque
+                if (game.in_check()) {
+                    status += ` ${moveColor} están en jaque.`;
+                }
+            }
+
+            document.getElementById('status').innerText = status;
+        }
+
+        updateStatus();
+    </script>
+    <div id="status"></div>
+</body>
+</html>
