@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #333;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #chessboard {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(8, 1fr);
+      width: 90vmin;
+      height: 90vmin;
+      border: 2px solid #fff;
+    }
+
+    .square {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5vmin;
+    }
+
+    .red {
+      background-color: #b22222;
+    }
+
+    .black {
+      background-color: #000;
+    }
+
+    .piece {
+      cursor: pointer;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="chessboard"></div>
+
+  <script>
+    const boardElement = document.getElementById("chessboard");
+
+    // Tablero inicial con las piezas
+    const initialBoard = [
+      ["r", "n", "b", "q", "k", "b", "n", "r"],
+      ["p", "p", "p", "p", "p", "p", "p", "p"],
+      ["", "", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
+      ["P", "P", "P", "P", "P", "P", "P", "P"],
+      ["R", "N", "B", "Q", "K", "B", "N", "R"]
+    ];
+
+    // Representación de piezas
+    const pieceSymbols = {
+      r: "♜", n: "♞", b: "♝", q: "♛", k: "♚", p: "♟",
+      R: "♖", N: "♘", B: "♗", Q: "♕", K: "♔", P: "♙"
+    };
+
+    let selectedPiece = null;
+    let selectedPosition = null;
+
+    function createChessboard() {
+      boardElement.innerHTML = "";
+      initialBoard.forEach((row, rowIndex) => {
+        row.forEach((piece, colIndex) => {
+          const square = document.createElement("div");
+          square.className = "square " + ((rowIndex + colIndex) % 2 === 0 ? "red" : "black");
+          square.dataset.row = rowIndex;
+          square.dataset.col = colIndex;
+
+          if (piece) {
+            const pieceElement = document.createElement("div");
+            pieceElement.textContent = pieceSymbols[piece];
+            pieceElement.className = "piece";
+            square.appendChild(pieceElement);
+          }
+
+          square.addEventListener("click", handleSquareClick);
+          boardElement.appendChild(square);
+        });
+      });
+    }
+
+    function handleSquareClick(event) {
+      const square = event.currentTarget;
+      const row = parseInt(square.dataset.row);
+      const col = parseInt(square.dataset.col);
+
+      if (selectedPiece) {
+        // Mueve la pieza seleccionada
+        movePiece(row, col);
+      } else {
+        // Selecciona una pieza
+        selectPiece(row, col, square);
+      }
+    }
+
+    function selectPiece(row, col, square) {
+      const piece = initialBoard[row][col];
+      if (piece) {
+        selectedPiece = piece;
+        selectedPosition = { row, col };
+        square.classList.add("selected");
+      }
+    }
+
+    function movePiece(row, col) {
+      // Actualiza el tablero
+      initialBoard[row][col] = selectedPiece;
+      initialBoard[selectedPosition.row][selectedPosition.col] = "";
+
+      // Limpia la selección
+      selectedPiece = null;
+      selectedPosition = null;
+
+      // Redibuja el tablero
+      createChessboard();
+    }
+
+    // Inicializar el tablero
+    createChessboard();
+  </script>
+</body>
+</html>
