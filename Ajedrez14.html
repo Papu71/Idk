@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajedrez Funcional</title>
+    <style>
+        body {
+            background-color: #222;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(8, 80px);
+            grid-template-rows: repeat(8, 80px);
+            border: 5px solid #fff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        .square {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .black {
+            background-color: #111;
+        }
+
+        .red {
+            background-color: #d32f2f;
+        }
+
+        .highlight {
+            background-color: #ffc107 !important;
+        }
+
+        #gameStatus {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ajedrez Funcional</h1>
+    <div id="board"></div>
+    <p id="gameStatus">Turno de Blancas</p>
+
+    <script>
+        const boardElement = document.getElementById('board');
+        const statusElement = document.getElementById('gameStatus');
+        const boardSize = 8;
+        let turn = 'white';
+        let selectedPiece = null;
+
+        const initialBoard = [
+            ['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜'],
+            ['♟', '♟', '♟', '♟', '♟', '♟', '♟', '♟'],
+            ['.', '.', '.', '.', '.', '.', '.', '.'],
+            ['.', '.', '.', '.', '.', '.', '.', '.'],
+            ['.', '.', '.', '.', '.', '.', '.', '.'],
+            ['.', '.', '.', '.', '.', '.', '.', '.'],
+            ['♙', '♙', '♙', '♙', '♙', '♙', '♙', '♙'],
+            ['♖', '♘', '♗', '♕', '♔', '♗', '♘', '♖']
+        ];
+
+        function createChessboard() {
+            for (let row = 0; row < boardSize; row++) {
+                for (let col = 0; col < boardSize; col++) {
+                    const square = document.createElement('div');
+                    square.classList.add('square');
+                    square.classList.add((row + col) % 2 === 0 ? 'red' : 'black');
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+                    boardElement.appendChild(square);
+                }
+            }
+            renderPieces();
+        }
+
+        function renderPieces() {
+            document.querySelectorAll('.square').forEach(square => {
+                square.textContent = '';
+            });
+            for (let row = 0; row < boardSize; row++) {
+                for (let col = 0; col < boardSize; col++) {
+                    const piece = initialBoard[row][col];
+                    if (piece !== '.') {
+                        const square = boardElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                        square.textContent = piece;
+                    }
+                }
+            }
+        }
+
+        function selectPiece(row, col) {
+            if (selectedPiece) {
+                movePiece(row, col);
+            } else {
+                const piece = initialBoard[row][col];
+                if ((turn === 'white' && '♙♖♘♗♕♔'.includes(piece)) ||
+                    (turn === 'black' && '♟♜♞♝♛♚'.includes(piece))) {
+                    selectedPiece = { row, col, piece };
+                    highlightMoves(row, col);
+                }
+            }
+        }
+
+        function movePiece(row, col) {
+            const { row: oldRow, col: oldCol, piece } = selectedPiece;
+            if (isValidMove(oldRow, oldCol, row, col)) {
+                initialBoard[oldRow][oldCol] = '.';
+                initialBoard[row][col] = piece;
+                turn = turn === 'white' ? 'black' : 'white';
+                statusElement.textContent = `Turno de ${turn.charAt(0).toUpperCase() + turn.slice(1)}`;
+                renderPieces();
+            }
+            selectedPiece = null;
+            clearHighlights();
+        }
+
+        function isValidMove(oldRow, oldCol, newRow, newCol) {
+            const piece = initialBoard[oldRow][oldCol];
+            const target = initialBoard[newRow][newCol];
+            if (piece === '.' || (turn === 'white' && '♟♜♞♝♛♚'.includes(piece)) ||
+                (turn === 'black' && '♙♖♘♗♕♔'.includes(piece))) {
+                return false;
+            }
+            if (target !== '.' && ((turn === 'white' && '♙♖♘♗♕♔'.includes(target)) ||
+                (turn === 'black' && '♟♜♞♝♛♚'.includes(target)))) {
+                return false;
+            }
+            return true; // Validación básica; se puede expandir.
+        }
+
+        function highlightMoves(row, col) {
+            clearHighlights();
+            const piece = initialBoard[row][col];
+            // TODO: Lógica específica para resaltar movimientos válidos según la pieza.
+        }
+
+        function clearHighlights() {
+            document.querySelectorAll('.highlight').forEach(square => square.classList.remove('highlight'));
+        }
+
+        boardElement.addEventListener('click', e => {
+            const square = e.target;
+            if (square.classList.contains('square')) {
+                const row = parseInt(square.dataset.row, 10);
+                const col = parseInt(square.dataset.col, 10);
+                selectPiece(row, col);
+            }
+        });
+
+        createChessboard();
+    </script>
+</body>
+</html>
