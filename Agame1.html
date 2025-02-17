@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Atomic Stabilizer 3D Pro</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #hud {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-family: Arial;
+            background: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="hud">
+        <div>Estabilidad: <span id="stability">100%</span></div>
+        <div>Modo: <span id="mode">Radio (Ra)</span></div>
+        <div>Intentos: <span id="attempts">0</span></div>
+        <div>Tiempo: <span id="timer">0s</span></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tweakpane@3.0.5/dist/tweakpane.min.js"></script>
+
+    <script>
+        let scene, camera, renderer, world, composer;
+        let nucleus, electrons = [], alphaParticles = [];
+        let isStable = true, gameTime = 0, attempts = 0;
+        let currentMode = 'Ra'; // 'Ra' o 'F'
+
+        // Configuración inicial
+        function init() {
+            // 1. Escena 3D
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000);
+            document.body.appendChild(renderer.domElement);
+
+            // 2. Sistema de Física
+            world = new CANNON.World();
+            world.gravity.set(0, 0, 0);
+            world.solver.iterations = 10;
+
+            // 3. Iluminación
+            const ambientLight = new THREE.AmbientLight(0x404040);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+            pointLight.position.set(0, 0, 50);
+            scene.add(pointLight);
+
+            // 4. Crear átomo inicial
+            createAtom(currentMode);
+
+            // 5. Configurar cámara
+            camera.position.z = 30;
+
+            // 6. Eventos
+            window.addEventListener('resize', onWindowResize);
+            document.addEventListener('mousedown', onMouseDown);
+            document.addEventListener('mousemove', onMouseMove);
+
+            // 7. Iniciar loop
+            animate();
+        }
+
+        function createAtom(type) {
+            // Núcleo
+            const nucleusGeo = new THREE.IcosahedronGeometry(type === 'Ra' ? 3 : 2, 3);
+            const nucleusMat = new THREE.MeshPhongMaterial({
+                color: type === 'Ra' ? 0xFF3300 : 0x00FF88,
+                emissive: type === 'Ra' ? 0xFF0000 : 0x00FF00,
+                emissiveIntensity: 0.3,
+                shininess: 100
+            });
+            nucleus = new THREE.Mesh(nucleusGeo, nucleusMat);
+            scene.add(nucleus);
+
+            // Electrones (Quantum Cloud)
+            const electronCount = type === 'Ra' ? 88 : 9; // Ra (88 electrones), F⁻ (9)
+            for(let i = 0; i < electronCount; i++) {
+                createElectron(type);
+            }
+
+            // Partículas alfa (solo para Ra)
+            if(type === 'Ra') createAlphaParticles();
+        }
+
+        function createElectron(type) {
+            const eGeometry = new THREE.SphereGeometry(0.4, 16, 16);
+            const eMaterial = new THREE.MeshPhongMaterial({
+                color: 0x00FFFF,
+                emissive: 0x00FFFF,
+                emissiveIntensity: 0.5
+            });
+            const electron = new THREE.Mesh(eGeometry, eMaterial);
+
+            // Posición orbital inicial
+            const angle = Math.random() * Math.PI * 2;
+            const radius = 10 + Math.random() * 5;
+            electron.position.set(
+                Math.cos(angle) * radius,
+                Math.sin(angle) * radius,
+                (Math.random() - 0.5) * 5
+            );
+
+            // Física
+            const eBody = new CANNON.Body({ mass: 1 });
+            eBody.addShape(new CANNON.Sphere(0.4));
+            eBody.position.copy(electron.position);
+            eBody.velocity.set(
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2
+            );
+            world.addBody(eBody);
+
+            electrons.push({ mesh: electron, body: eBody, charge: -1 });
+            scene.add(electron);
+        }
+
+        function createAlphaParticles() {
+            // Partículas alfa (He²+)
+            const alphaMat = new THREE.MeshPhongMaterial({
+                color: 0xFFAA00,
+                emissive: 0xFF2200,
+                emissiveIntensity: 0.7
+            });
+
+            for(let i = 0; i < 4; i++) { // 2 protones + 2 neutrones
+                const alpha = new THREE.Mesh(new THREE.SphereGeometry(0.6), alphaMat);
+                alpha.position.set(
+                    (Math.random() - 0.5) * 2,
+                    (Math.random() - 0.5) * 2,
+                    (Math.random() - 0.5) * 2
+                );
+                
+                const aBody = new CANNON.Body({ mass: 4 });
+                aBody.addShape(new CANNON.Sphere(0.6));
+                aBody.position.copy(alpha.position);
+                world.addBody(aBody);
+
+                alphaParticles.push({ mesh: alpha, body: aBody, charge: +2 });
+                scene.add(alpha);
+            }
+        }
+
+        // Lógica de Interacción
+        function onMouseDown(event) {
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(electrons.map(e => e.mesh));
+
+            if(intersects.length > 0) {
+                const electron = electrons.find(e => e.mesh === intersects[0].object);
+                applyQuantumForce(electron.body);
+            }
+        }
+
+        function applyQuantumForce(body) {
+            body.applyLocalForce(new CANNON.Vec3(
+                (Math.random() - 0.5) * 10,
+                (Math.random() - 0.5) * 10,
+                (Math.random() - 0.5) * 10
+            ));
+        }
+
+        // Sistema de Partículas para Efectos
+        function createParticleExplosion(position) {
+            const particles = new THREE.BufferGeometry();
+            const positions = new Float32Array(1000 * 3);
+            for(let i = 0; i < 1000; i++) {
+                positions[i*3] = position.x + (Math.random() - 0.5) * 10;
+                positions[i*3+1] = position.y + (Math.random() - 0.5) * 10;
+                positions[i*3+2] = position.z + (Math.random() - 0.5) * 10;
+            }
+            particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            
+            const particleSystem = new THREE.Points(
+                particles,
+                new THREE.PointsMaterial({ color: 0xFF0000, size: 0.1 })
+            );
+            scene.add(particleSystem);
+            
+            setTimeout(() => scene.remove(particleSystem), 1000);
+        }
+
+        // Lógica del Juego
+        function checkStability() {
+            let stability = 100;
+            electrons.forEach(e => {
+                const distance = e.body.position.distanceTo(nucleus.position);
+                if(distance > 15) stability -= 1;
+            });
+            
+            document.getElementById('stability').textContent = `${Math.max(0, stability)}%`;
+            if(stability <= 0) atomCollapse();
+        }
+
+        function atomCollapse() {
+            createParticleExplosion(nucleus.position);
+            setTimeout(resetAtom, 2000);
+            attempts++;
+            document.getElementById('attempts').textContent = attempts;
+            isStable = false;
+        }
+
+        function resetAtom() {
+            electrons.forEach(e => {
+                scene.remove(e.mesh);
+                world.remove(e.body);
+            });
+            electrons = [];
+            createAtom(currentMode);
+            isStable = true;
+        }
+
+        // Bucle Principal
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Actualizar Física
+            world.step(1/60);
+            
+            // Actualizar Gráficos
+            electrons.forEach(e => {
+                e.mesh.position.copy(e.body.position);
+                
+                // Campo Electromagnético
+                const distance = e.body.position.distanceTo(nucleus.position);
+                const force = -1000 / (distance * distance);
+                const direction = e.body.position.vsub(nucleus.position).normalize();
+                e.body.applyForce(direction.scale(force));
+            });
+
+            // Actualizar HUD
+            gameTime += 0.016;
+            document.getElementById('timer').textContent = `${gameTime.toFixed(1)}s`;
+
+            checkStability();
+            renderer.render(scene, camera);
+        }
+
+        // Helpers
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // Iniciar Juego
+        init();
+    </script>
+</body>
+</html>
