@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Atomic Stabilizer 3D</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
+
+    <script>
+        let scene, camera, renderer, world;
+        let nucleus, particles = [];
+        let isGameActive = true;
+
+        // Configuración inicial
+        function init() {
+            // Escena 3D
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            // Física (Cannon.js)
+            world = new CANNON.World();
+            world.gravity.set(0, 0, 0); // Gravedad cero
+
+            // Crear núcleo atómico (Radio)
+            createNucleus(0xeb3434, 2); // Rojo radiactivo
+
+            // Crear partículas orbitando (electrones)
+            createElectronCloud(5);
+
+            // Posición de la cámara
+            camera.position.z = 15;
+
+            // Event listeners
+            window.addEventListener('resize', onWindowResize, false);
+            document.addEventListener('mousedown', onMouseDown);
+            animate();
+        }
+
+        function createNucleus(color, size) {
+            // Geometría del núcleo
+            const geometry = new THREE.SphereGeometry(size, 32, 32);
+            const material = new THREE.MeshPhongMaterial({ color, emissive: 0xff0000, emissiveIntensity: 0.5 });
+            nucleus = new THREE.Mesh(geometry, material);
+            scene.add(nucleus);
+
+            // Física del núcleo
+            const nucleusBody = new CANNON.Body({ mass: 0 });
+            nucleusBody.addShape(new CANNON.Sphere(size));
+            nucleusBody.position.set(0, 0, 0);
+            world.addBody(nucleusBody);
+        }
+
+        function createElectronCloud(numParticles) {
+            for (let i = 0; i < numParticles; i++) {
+                const geometry = new THREE.SphereGeometry(0.5);
+                const material = new THREE.MeshPhongMaterial({ color: 0x34ebd8, emissive: 0x00ffff });
+                const electron = new THREE.Mesh(geometry, material);
+
+                // Posición aleatoria
+                const angle = (i / numParticles) * Math.PI * 2;
+                electron.position.set(Math.cos(angle)*5, Math.sin(angle)*5, 0);
+                scene.add(electron);
+
+                // Física de partículas
+                const particleBody = new CANNON.Body({ mass: 1 });
+                particleBody.addShape(new CANNON.Sphere(0.5));
+                particleBody.position.copy(electron.position);
+                particleBody.velocity.set(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5);
+                world.addBody(particleBody);
+
+                particles.push({ mesh: electron, body: particleBody });
+            }
+        }
+
+        function onMouseDown(event) {
+            // Lógica para aplicar fuerzas a las partículas (ejemplo básico)
+            particles.forEach(particle => {
+                particle.body.applyLocalForce(new CANNON.Vec3(
+                    (Math.random() - 0.5) * 10,
+                    (Math.random() - 0.5) * 10,
+                    0
+                ));
+            });
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (!isGameActive) return;
+
+            // Actualizar física
+            world.step(1/60);
+
+            // Sincronizar gráficos con física
+            particles.forEach(particle => {
+                particle.mesh.position.copy(particle.body.position);
+                particle.mesh.quaternion.copy(particle.body.quaternion);
+            });
+
+            // Verificar estabilidad (ejemplo)
+            checkStability();
+
+            renderer.render(scene, camera);
+        }
+
+        function checkStability() {
+            let totalDistance = 0;
+            particles.forEach(particle => {
+                totalDistance += particle.body.position.distanceTo(nucleus.position);
+            });
+            if (totalDistance/particles.length > 8) {
+                console.log("¡Átomo inestable! Colapso inminente.");
+                // Añadir efectos visuales aquí (ej: parpadeo rojo)
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
