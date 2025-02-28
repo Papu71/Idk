@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dibujo Simulado</title>
+    <style>
+        body { text-align: center; }
+        canvas { border: 1px solid black; }
+    </style>
+</head>
+<body>
+    <h2>Simulación de Trazos</h2>
+    <canvas id="canvas" width="500" height="500"></canvas>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        function drawLine(x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = Math.random() * 2;
+            ctx.stroke();
+        }
+
+        function sketchEffect() {
+            let lines = [
+                [100, 200, 200, 150], [200, 150, 250, 100], [250, 100, 300, 120], 
+                [100, 200, 120, 300], [120, 300, 180, 350], [180, 350, 220, 320], 
+                [300, 120, 330, 200], [330, 200, 310, 250], [310, 250, 280, 280], 
+                [280, 280, 250, 270], [250, 270, 230, 250], [230, 250, 220, 220]
+            ];
+            
+            let i = 0;
+            function drawNextLine() {
+                if (i < lines.length) {
+                    let [x1, y1, x2, y2] = lines[i];
+                    drawLine(x1, y1, x2, y2);
+                    i++;
+                    setTimeout(drawNextLine, 200); // Simula el trazo progresivo
+                }
+            }
+            drawNextLine();
+        }
+
+        sketchEffect();
+    </script>
+</body>
+</html>
