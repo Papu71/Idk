@@ -3,107 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>10,000 Dígitos de Pi - Estética Científica</title>
+    <title>10,000 Dígitos de π - Visualización</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         body {
             background-color: black;
-            color: #00ff00;
+            color: white;
             font-family: "Courier New", monospace;
-            overflow: hidden;
-            margin: 0;
+            text-align: center;
+        }
+        #canvas {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            margin: 20px auto;
         }
-
-        .container {
-            width: 80%;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+        .controls {
+            margin: 10px;
         }
-
-        .column {
-            width: 10%;
-            height: 100%;
-            overflow: hidden;
-            position: relative;
+        button {
+            background-color: #222;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 10px;
+            cursor: pointer;
+            margin: 5px;
         }
-
-        .digits {
-            position: absolute;
-            top: 100%;
-            width: 100%;
-            font-size: 1.2rem;
-            line-height: 1.4rem;
-            text-align: center;
-            white-space: nowrap;
-            animation: scroll 10s linear infinite;
-        }
-
-        @keyframes scroll {
-            from {
-                top: 100%;
-            }
-            to {
-                top: -100%;
-            }
-        }
-
-        .highlight {
-            color: #ffcc00;
-            text-shadow: 0 0 10px #ffcc00;
+        button:hover {
+            background-color: #00ff00;
+            color: black;
         }
     </style>
 </head>
 <body>
-    <div class="container" id="piContainer"></div>
+    <h1>Visualización de los Primeros 10,000 Dígitos de π</h1>
+    <div id="canvas"></div>
+    <div class="controls">
+        <button onclick="toggleAnimation()">Pausar/Reanudar</button>
+        <button onclick="changeColors()">Cambiar Colores</button>
+    </div>
 
     <script>
-        // Los primeros 10,000 dígitos de Pi (solo pondré los primeros pocos, pero debes agregar los 10,000)
-        const piDigits = "3.14159265358979323846264338327950288419716939937510"
-        + "58209749445923078164062862089986280348253421170679"
-        + "82148086513282306647093844609550582231725359408128"
-        + "48111745028410270193852110555964462294895493038196"
-        + "44288109756659334461284756482337867831652712019091"
-        + "45648566923460348610454326648213393607260249141273"
-        + "72458700660631558817488152092096282925409171536436"
-        // (Aquí van los 10,000 dígitos, por razones de espacio no los pego todos, pero puedes ponerlos)
+        const piDigits = "314159265358979323846264338327950288419716939937510" +
+                         "58209749445923078164062862089986280348253421170679" +
+                         "82148086513282306647093844609550582231725359408128" +
+                         "48111745028410270193852110555964462294895493038196" +
+                         "44288109756659334461284756482337867831652712019091"
+                         // Continúa con los 10,000 dígitos de Pi...
 
-        const container = document.getElementById("piContainer");
+        const numRows = 100;
+        const numCols = 100;
+        const cellSize = 8; 
 
-        // Número de columnas de dígitos
-        const numColumns = 10;
-        const digitsPerColumn = Math.ceil(piDigits.length / numColumns);
+        const colors = ["#FF5733", "#FFC300", "#DAF7A6", "#33FF57", "#3380FF",
+                        "#A633FF", "#FF33B5", "#33FFD1", "#FF8333", "#B8FF33"];
 
-        for (let i = 0; i < numColumns; i++) {
-            const columnDiv = document.createElement("div");
-            columnDiv.classList.add("column");
+        let currentColors = [...colors];
+        let isPaused = false;
 
-            const digitsDiv = document.createElement("div");
-            digitsDiv.classList.add("digits");
-            digitsDiv.style.animationDuration = (8 + Math.random() * 5) + "s"; // Variación en la velocidad
+        const svg = d3.select("#canvas")
+                      .append("svg")
+                      .attr("width", numCols * cellSize)
+                      .attr("height", numRows * cellSize);
 
-            // Extrae los dígitos para esta columna
-            let columnDigits = "";
-            for (let j = i * digitsPerColumn; j < (i + 1) * digitsPerColumn; j++) {
-                if (piDigits[j]) {
-                    // Resaltar algunos dígitos aleatorios
-                    if (Math.random() < 0.05) {
-                        columnDigits += `<span class="highlight">${piDigits[j]}</span>`;
-                    } else {
-                        columnDigits += piDigits[j];
-                    }
-                }
+        const grid = svg.selectAll("rect")
+                        .data(piDigits.split("").slice(0, numRows * numCols))
+                        .enter()
+                        .append("rect")
+                        .attr("x", (d, i) => (i % numCols) * cellSize)
+                        .attr("y", (d, i) => Math.floor(i / numCols) * cellSize)
+                        .attr("width", cellSize)
+                        .attr("height", cellSize)
+                        .attr("fill", d => currentColors[d])
+                        .attr("stroke", "#111");
+
+        function animateGrid() {
+            if (!isPaused) {
+                grid.transition()
+                    .duration(2000)
+                    .attr("fill", d => currentColors[(d + Math.floor(Math.random() * 10)) % 10])
+                    .on("end", animateGrid);
             }
-
-            digitsDiv.innerHTML = columnDigits;
-            columnDiv.appendChild(digitsDiv);
-            container.appendChild(columnDiv);
         }
+
+        function toggleAnimation() {
+            isPaused = !isPaused;
+            if (!isPaused) animateGrid();
+        }
+
+        function changeColors() {
+            currentColors = currentColors.map(color => d3.interpolateRainbow(Math.random()));
+            grid.attr("fill", d => currentColors[d]);
+        }
+
+        animateGrid();
     </script>
 </body>
 </html>
