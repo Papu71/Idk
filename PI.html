@@ -3,100 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>10,000 Dígitos de π - Visualización</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <title>Pi en Movimiento</title>
     <style>
         body {
             background-color: black;
+            overflow: hidden;
+            font-family: monospace;
             color: white;
-            font-family: "Courier New", monospace;
-            text-align: center;
         }
-        #canvas {
+        .container {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 20px auto;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
         }
-        .controls {
-            margin: 10px;
+        .column {
+            font-size: 20px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            position: absolute;
+            animation: fall linear infinite;
         }
-        button {
-            background-color: #222;
-            color: #00ff00;
-            border: 1px solid #00ff00;
-            padding: 10px;
-            cursor: pointer;
-            margin: 5px;
-        }
-        button:hover {
-            background-color: #00ff00;
-            color: black;
+        @keyframes fall {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(100vh); }
         }
     </style>
 </head>
 <body>
-    <h1>Visualización de los Primeros 10,000 Dígitos de π</h1>
-    <div id="canvas"></div>
-    <div class="controls">
-        <button onclick="toggleAnimation()">Pausar/Reanudar</button>
-        <button onclick="changeColors()">Cambiar Colores</button>
-    </div>
+    <div class="container" id="piContainer"></div>
 
     <script>
-        const piDigits = "314159265358979323846264338327950288419716939937510" +
-                         "58209749445923078164062862089986280348253421170679" +
+        const piDigits = "314159265358979323846264338327950288419716939937510" + 
+                         "58209749445923078164062862089986280348253421170679" + 
                          "82148086513282306647093844609550582231725359408128" +
                          "48111745028410270193852110555964462294895493038196" +
-                         "44288109756659334461284756482337867831652712019091"
+                         "44288109756659334461284756482337867831652712019091" + 
                          // Continúa con los 10,000 dígitos de Pi...
+                         "82859085321960798840724771664820609145648566923460";
 
-        const numRows = 100;
-        const numCols = 100;
-        const cellSize = 8; 
+        const container = document.getElementById("piContainer");
+        const columns = 20; // Cantidad de columnas en la pantalla
+        const speedFactor = 3; // Velocidad base de caída
 
-        const colors = ["#FF5733", "#FFC300", "#DAF7A6", "#33FF57", "#3380FF",
-                        "#A633FF", "#FF33B5", "#33FFD1", "#FF8333", "#B8FF33"];
+        for (let i = 0; i < columns; i++) {
+            let column = document.createElement("div");
+            column.classList.add("column");
 
-        let currentColors = [...colors];
-        let isPaused = false;
+            // Asignar un tamaño y posición aleatoria
+            column.style.left = `${(i / columns) * 100}vw`;
+            column.style.animationDuration = `${(Math.random() * 3 + speedFactor)}s`;
 
-        const svg = d3.select("#canvas")
-                      .append("svg")
-                      .attr("width", numCols * cellSize)
-                      .attr("height", numRows * cellSize);
-
-        const grid = svg.selectAll("rect")
-                        .data(piDigits.split("").slice(0, numRows * numCols))
-                        .enter()
-                        .append("rect")
-                        .attr("x", (d, i) => (i % numCols) * cellSize)
-                        .attr("y", (d, i) => Math.floor(i / numCols) * cellSize)
-                        .attr("width", cellSize)
-                        .attr("height", cellSize)
-                        .attr("fill", d => currentColors[d])
-                        .attr("stroke", "#111");
-
-        function animateGrid() {
-            if (!isPaused) {
-                grid.transition()
-                    .duration(2000)
-                    .attr("fill", d => currentColors[(d + Math.floor(Math.random() * 10)) % 10])
-                    .on("end", animateGrid);
+            // Generar una columna con dígitos de Pi
+            let columnDigits = "";
+            for (let j = 0; j < 50; j++) {
+                let randomIndex = Math.floor(Math.random() * piDigits.length);
+                columnDigits += `<span style="color: ${getRandomColor()}">${piDigits[randomIndex]}</span><br>`;
             }
+
+            column.innerHTML = columnDigits;
+            container.appendChild(column);
         }
 
-        function toggleAnimation() {
-            isPaused = !isPaused;
-            if (!isPaused) animateGrid();
+        function getRandomColor() {
+            const colors = ["#FF5733", "#FFC300", "#DAF7A6", "#33FF57", "#3380FF", "#A633FF", "#FF33B5", "#33FFD1", "#FF8333", "#B8FF33"];
+            return colors[Math.floor(Math.random() * colors.length)];
         }
-
-        function changeColors() {
-            currentColors = currentColors.map(color => d3.interpolateRainbow(Math.random()));
-            grid.attr("fill", d => currentColors[d]);
-        }
-
-        animateGrid();
     </script>
 </body>
 </html>
